@@ -77,12 +77,41 @@
                 transform: scale(1);
             }
         }
+
+        /* ===== OVERLAY PLAY ===== */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #overlay button {
+            padding: 14px 28px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #000;
+        }
     </style>
 </head>
 <body>
 
 <div id="lyrics"></div>
 <div id="loveWrapper"></div>
+
+<!-- OVERLAY UNTUK MEMAKSA INTERAKSI -->
+<div id="overlay">
+    <button id="playBtn">Tap to Play</button>
+</div>
+
+<!-- AUDIO -->
+<audio id="bgMusic" src="lagu.mp3" loop></audio>
 
 <script>
     const lyrics = [
@@ -99,6 +128,9 @@
 
     const container = document.getElementById("lyrics");
     const loveWrapper = document.getElementById("loveWrapper");
+    const overlay = document.getElementById("overlay");
+    const playBtn = document.getElementById("playBtn");
+    const bgMusic = document.getElementById("bgMusic");
 
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -143,7 +175,6 @@
                 love.style.top = Math.random() * 100 + "%";
                 love.style.transform += ` scale(${0.6 + Math.random() * 0.6})`;
 
-                // SVG love outline
                 love.innerHTML = `
                     <svg viewBox="0 0 24 24" width="100%" height="100%">
                         <path d="M12 21s-7-4.6-9.5-9.2C.6 7.2 3.1 4 6.5 4c1.8 0 3.4 1 4.5 2.6C12.1 5 13.7 4 15.5 4 18.9 4 21.4 7.2 21.5 11.8 19 16.4 12 21 12 21z"
@@ -158,7 +189,13 @@
         }
     }
 
-    singSong();
+    // ===== INTERAKSI PLAY =====
+    playBtn.addEventListener("click", async () => {
+        await bgMusic.play();   // wajib pakai user interaction
+        overlay.style.display = "none";
+        singSong();
+    });
+
 </script>
 
 </body>

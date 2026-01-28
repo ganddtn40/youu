@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Animated Lyrics</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #0f0f0f;
+            color: #f5f5f5;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            margin: 0;
+            height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #lyrics {
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .line {
+            margin-bottom: 14px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== LOVE RAIN (SVG) ===== */
+
+        #loveWrapper {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .love {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            animation: loveLife 3s ease forwards;
+        }
+
+        @keyframes loveLife {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+            30% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="lyrics"></div>
+<div id="loveWrapper"></div>
+
+<script>
+    const lyrics = [
+        { text: "Do you think I have forgotten?", speed: 100, delay: 300 },
+        { text: "Do you think I have forgotten?", speed: 100, delay: 5000 },
+        { text: "Do you think I have forgotten", speed: 100, delay: 4500 },
+        { text: "about you?", speed: 200, delay: 6000 },
+        { text: "There was something bout you that now I cant remember", speed: 80, delay: 4500 },
+        { text: "Its the same damn thing that made my heart surrender", speed: 100, delay: 3600 },
+        { text: "And I miss you on a train, I miss you in the morning", speed: 100, delay: 4700 },
+        { text: "I never know what to think about", speed: 100, delay: 5600 },
+        { text: "I think about youu.", speed: 100, delay: 5400 }
+    ];
+
+    const container = document.getElementById("lyrics");
+    const loveWrapper = document.getElementById("loveWrapper");
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function animateText(text, speed, isLast = false) {
+        const line = document.createElement("div");
+        line.className = "line";
+        container.appendChild(line);
+
+        for (let char of text) {
+            line.textContent += char;
+            await sleep(speed);
+        }
+
+        if (isLast) {
+            await sleep(300);
+            spawnLoves();
+        }
+    }
+
+    async function singSong() {
+        for (let i = 0; i < lyrics.length; i++) {
+            await sleep(lyrics[i].delay);
+            animateText(
+                lyrics[i].text,
+                lyrics[i].speed,
+                i === lyrics.length - 1
+            );
+        }
+    }
+
+    function spawnLoves() {
+        const count = 28;
+
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => {
+                const love = document.createElement("div");
+                love.className = "love";
+
+                love.style.left = Math.random() * 100 + "%";
+                love.style.top = Math.random() * 100 + "%";
+                love.style.transform += ` scale(${0.6 + Math.random() * 0.6})`;
+
+                // SVG love outline
+                love.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="100%" height="100%">
+                        <path d="M12 21s-7-4.6-9.5-9.2C.6 7.2 3.1 4 6.5 4c1.8 0 3.4 1 4.5 2.6C12.1 5 13.7 4 15.5 4 18.9 4 21.4 7.2 21.5 11.8 19 16.4 12 21 12 21z"
+                              fill="none" stroke="#fff" stroke-width="1.5" />
+                    </svg>
+                `;
+
+                loveWrapper.appendChild(love);
+
+                setTimeout(() => love.remove(), 3000);
+            }, i * 80);
+        }
+    }
+
+    singSong();
+</script>
+
+</body>
+</html>
